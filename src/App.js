@@ -8,6 +8,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { supabase } from './supabaseClient';
+// First add the ShareIcon import at the top with other imports
+import ShareIcon from '@mui/icons-material/Share';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -272,9 +274,44 @@ function App() {
               {/* Display the generated content */}
               {generatedContent && (
                 <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Generated Content
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                      Generated Content
+                    </Typography>
+                    <Box>
+                      <Tooltip title="Copy to clipboard">
+                        <IconButton 
+                          onClick={() => copyToClipboard(generatedContent)}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        >
+                          <ContentCopyIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Share">
+                        <IconButton 
+                          onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: 'LinkedIn Post',
+                                text: generatedContent
+                              }).catch(err => {
+                                setError('Sharing failed');
+                                setShowAlert(true);
+                              });
+                            } else {
+                              copyToClipboard(generatedContent);
+                              setError('Copied to clipboard (share not supported)');
+                              setShowAlert(true);
+                            }
+                          }}
+                          size="small"
+                        >
+                          <ShareIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
                   <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
                     {generatedContent}
                   </Typography>
