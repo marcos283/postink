@@ -10,6 +10,8 @@ import { es } from 'date-fns/locale';
 import { supabase } from './supabaseClient';
 // First add the ShareIcon import at the top with other imports
 import ShareIcon from '@mui/icons-material/Share';
+// Add ContentPasteIcon import at the top with other imports
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -85,10 +87,11 @@ function App() {
           model: "mistral-tiny",
           messages: [{
             role: "user",
-            content: `Crea una publicación para LinkedIn en español de España sobre el contenido de esta URL: ${url}. 
+            content: `Crea una publicación para LinkedIn en español de España sobre esta URL: ${url}. 
                      Que sea de longitud ${postLength}, ${useEmojis ? 'utiliza' : "no utilices"} emojis, 
                      y mantén un tono ${tone}. Utiliza expresiones y vocabulario propios de España.
-                     El post debe terminar con una línea en blanco seguida de "Más información: ${url}"`
+                     El post debe terminar con una línea en blanco seguida de "Más información: ${url}".
+                     IMPORTANTE: No menciones que no puedes acceder al contenido, simplemente genera el post basándote en la información disponible.`
           }]
         }),
         signal: controller.signal
@@ -201,16 +204,34 @@ function App() {
               </IconButton>
             </Box>
 
-            <TextField
-              fullWidth
-              label="Website URL"
-              value={url}
-              onChange={handleUrlChange}
-              margin="normal"
-              disabled={isLoading}
-              error={!isValidUrl && url.length > 0}
-              helperText={!isValidUrl && url.length > 0 ? 'Please enter a valid URL' : ''}
-            />
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+              <TextField
+                fullWidth
+                label="Website URL"
+                value={url}
+                onChange={handleUrlChange}
+                margin="normal"
+                disabled={isLoading}
+                error={!isValidUrl && url.length > 0}
+                helperText={!isValidUrl && url.length > 0 ? 'Please enter a valid URL' : ''}
+              />
+              <IconButton 
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    setUrl(text);
+                    setIsValidUrl(validateUrl(text));
+                  } catch (err) {
+                    setError('Failed to paste from clipboard');
+                    setShowAlert(true);
+                  }
+                }}
+                sx={{ mt: 2 }}
+                disabled={isLoading}
+              >
+                <ContentPasteIcon />
+              </IconButton>
+            </Box>
 
             <FormControl fullWidth margin="normal">
               <InputLabel>Post Length</InputLabel>
