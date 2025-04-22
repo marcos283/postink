@@ -181,235 +181,230 @@ function App() {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#0a66c2',
+        main: '#0a66c2', // LinkedIn blue
       },
       background: {
-        default: darkMode ? '#121212' : '#f5f7fa',
-        paper: darkMode ? '#1e1e1e' : '#ffffff',
+        default: darkMode ? '#1a1a1a' : '#f0f2f5', // Darker background in dark mode
+        paper: darkMode ? '#2d2d2d' : '#ffffff',    // Darker paper in dark mode
       }
     }
   });
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          PostInk - Social Media Content Generator
-        </Typography>
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-          <Container maxWidth="md" sx={{ py: 4 }}>
-            <Paper elevation={3} sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h4">
-                  LinkedIn Post Generator
-                </Typography>
-                <IconButton onClick={() => setDarkMode(!darkMode)}>
-                  {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-                </IconButton>
-              </Box>
+      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+        <Container maxWidth="md" sx={{ py: 4 }}>
+          <Paper elevation={3} sx={{ p: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h4">
+                LinkedIn Post Generator
+              </Typography>
+              <IconButton onClick={() => setDarkMode(!darkMode)}>
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Box>
 
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                <TextField
-                  fullWidth
-                  label="Website URL"
-                  value={url}
-                  onChange={handleUrlChange}
-                  margin="normal"
-                  disabled={isLoading}
-                  error={!isValidUrl && url.length > 0}
-                  helperText={!isValidUrl && url.length > 0 ? 'Please enter a valid URL' : ''}
-                />
-                <IconButton 
-                  onClick={async () => {
-                    try {
-                      const text = await navigator.clipboard.readText();
-                      setUrl(text);
-                      setIsValidUrl(validateUrl(text));
-                    } catch (err) {
-                      setError('Failed to paste from clipboard');
-                      setShowAlert(true);
-                    }
-                  }}
-                  sx={{ mt: 2 }}
-                  disabled={isLoading}
-                >
-                  <ContentPasteIcon />
-                </IconButton>
-              </Box>
-
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Post Length</InputLabel>
-                <Select
-                  value={postLength}
-                  onChange={(e) => setPostLength(e.target.value)}
-                  label="Post Length"
-                  disabled={isLoading}
-                >
-                  <MenuItem value="short">Short</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="long">Long</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Tone</InputLabel>
-                <Select
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                  label="Tone"
-                  disabled={isLoading}
-                >
-                  <MenuItem value="professional">Professional</MenuItem>
-                  <MenuItem value="casual">Casual</MenuItem>
-                  <MenuItem value="enthusiastic">Enthusiastic</MenuItem>
-                  <MenuItem value="formal">Formal</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                      checked={useEmojis}
-                      onChange={(e) => setUseEmojis(e.target.checked)}
-                      disabled={isLoading}
-                    />
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+              <TextField
+                fullWidth
+                label="Website URL"
+                value={url}
+                onChange={handleUrlChange}
+                margin="normal"
+                disabled={isLoading}
+                error={!isValidUrl && url.length > 0}
+                helperText={!isValidUrl && url.length > 0 ? 'Please enter a valid URL' : ''}
+              />
+              <IconButton 
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    setUrl(text);
+                    setIsValidUrl(validateUrl(text));
+                  } catch (err) {
+                    setError('Failed to paste from clipboard');
+                    setShowAlert(true);
                   }
-                  label="Include emojis"
-                  sx={{ mt: 1 }}
-                />
+                }}
+                sx={{ mt: 2 }}
+                disabled={isLoading}
+              >
+                <ContentPasteIcon />
+              </IconButton>
+            </Box>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={generatePost}
-                  fullWidth
-                  sx={{ mt: 3 }}
-                  disabled={isLoading || !isValidUrl}
-                >
-                  {isLoading ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <CircularProgress size={24} sx={{ mr: 1 }} color="inherit" />
-                      Generating...
-                    </Box>
-                  ) : (
-                    'Generate Post'
-                  )}
-                </Button>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Post Length</InputLabel>
+              <Select
+                value={postLength}
+                onChange={(e) => setPostLength(e.target.value)}
+                label="Post Length"
+                disabled={isLoading}
+              >
+                <MenuItem value="short">Short</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="long">Long</MenuItem>
+              </Select>
+            </FormControl>
 
-                {/* Display the generated content */}
-                {generatedContent && (
-                  <Box sx={{ mt: 4 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Generated Content
-                      </Typography>
-                      <Box>
-                        <Tooltip title="Copy to clipboard">
-                          <IconButton 
-                            onClick={() => copyToClipboard(generatedContent)}
-                            size="small"
-                            sx={{ mr: 1 }}
-                          >
-                            <ContentCopyIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Share">
-                          <IconButton 
-                            onClick={() => {
-                              if (navigator.share) {
-                                navigator.share({
-                                  title: 'LinkedIn Post',
-                                  text: generatedContent
-                                }).catch(err => {
-                                  setError('Sharing failed');
-                                  setShowAlert(true);
-                                });
-                              } else {
-                                copyToClipboard(generatedContent);
-                                setError('Copied to clipboard (share not supported)');
-                                setShowAlert(true);
-                              }
-                            }}
-                            size="small"
-                          >
-                            <ShareIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-                      {generatedContent}
-                    </Typography>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Tone</InputLabel>
+              <Select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                label="Tone"
+                disabled={isLoading}
+              >
+                <MenuItem value="professional">Professional</MenuItem>
+                <MenuItem value="casual">Casual</MenuItem>
+                <MenuItem value="enthusiastic">Enthusiastic</MenuItem>
+                <MenuItem value="formal">Formal</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                    checked={useEmojis}
+                    onChange={(e) => setUseEmojis(e.target.checked)}
+                    disabled={isLoading}
+                  />
+                }
+                label="Include emojis"
+                sx={{ mt: 1 }}
+              />
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={generatePost}
+                fullWidth
+                sx={{ mt: 3 }}
+                disabled={isLoading || !isValidUrl}
+              >
+                {isLoading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CircularProgress size={24} sx={{ mr: 1 }} color="inherit" />
+                    Generating...
                   </Box>
+                ) : (
+                  'Generate Post'
                 )}
+              </Button>
 
-                {posts.length > 0 && (
-                  <Box sx={{ mt: 4 }}>
+              {/* Display the generated content */}
+              {generatedContent && (
+                <Box sx={{ mt: 4 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h6" gutterBottom>
-                      Recent Posts
+                      Generated Content
                     </Typography>
-                    {posts.map((post) => (
-                      <Paper key={post.id} elevation={1} sx={{ p: 2, mb: 2 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <Box sx={{ width: '100%' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                              <Typography variant="caption" color="textSecondary">
-                                {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: es })}
-                              </Typography>
-                              <Box>
-                                <Chip size="small" label={post.post_length} sx={{ mr: 1 }} />
-                                <Chip size="small" label={post.tone} />
-                                {post.use_emojis && <Chip size="small" label="Emojis" sx={{ ml: 1 }} />}
-                              </Box>
-                            </Box>
-                            <Typography variant="caption" color="textSecondary" display="block">
-                              URL: {post.url}
+                    <Box>
+                      <Tooltip title="Copy to clipboard">
+                        <IconButton 
+                          onClick={() => copyToClipboard(generatedContent)}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        >
+                          <ContentCopyIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Share">
+                        <IconButton 
+                          onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: 'LinkedIn Post',
+                                text: generatedContent
+                              }).catch(err => {
+                                setError('Sharing failed');
+                                setShowAlert(true);
+                              });
+                            } else {
+                              copyToClipboard(generatedContent);
+                              setError('Copied to clipboard (share not supported)');
+                              setShowAlert(true);
+                            }
+                          }}
+                          size="small"
+                        >
+                          <ShareIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                    {generatedContent}
+                  </Typography>
+                </Box>
+              )}
+
+              {posts.length > 0 && (
+                <Box sx={{ mt: 4 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Recent Posts
+                  </Typography>
+                  {posts.map((post) => (
+                    <Paper key={post.id} elevation={1} sx={{ p: 2, mb: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <Box sx={{ width: '100%' }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="caption" color="textSecondary">
+                              {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: es })}
                             </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }}>
-                              {post.content}
-                            </Typography>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                              <Tooltip title="Copy to clipboard">
-                                <IconButton onClick={() => copyToClipboard(post.content)} size="small" sx={{ mr: 1 }}>
-                                  <ContentCopyIcon fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-                              <IconButton 
-                                onClick={() => deletePost(post.id)}
-                                size="small"
-                                color="error"
-                                disabled={deletingId === post.id}
-                              >
-                                {deletingId === post.id ? (
-                                  <CircularProgress size={20} color="error" />
-                                ) : (
-                                  <DeleteIcon />
-                                )}
-                              </IconButton>
+                            <Box>
+                              <Chip size="small" label={post.post_length} sx={{ mr: 1 }} />
+                              <Chip size="small" label={post.tone} />
+                              {post.use_emojis && <Chip size="small" label="Emojis" sx={{ ml: 1 }} />}
                             </Box>
                           </Box>
+                          <Typography variant="caption" color="textSecondary" display="block">
+                            URL: {post.url}
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1 }}>
+                            {post.content}
+                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <Tooltip title="Copy to clipboard">
+                              <IconButton onClick={() => copyToClipboard(post.content)} size="small" sx={{ mr: 1 }}>
+                                <ContentCopyIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            <IconButton 
+                              onClick={() => deletePost(post.id)}
+                              size="small"
+                              color="error"
+                              disabled={deletingId === post.id}
+                            >
+                              {deletingId === post.id ? (
+                                <CircularProgress size={20} color="error" />
+                              ) : (
+                                <DeleteIcon />
+                              )}
+                            </IconButton>
+                          </Box>
                         </Box>
-                      </Paper>
-                    ))}
-                  </Box>
-                )}
+                      </Box>
+                    </Paper>
+                  ))}
+                </Box>
+              )}
 
-                <Snackbar
-                  open={showAlert}
-                  autoHideDuration={6000}
+              <Snackbar
+                open={showAlert}
+                autoHideDuration={6000}
+                onClose={() => setShowAlert(false)}
+              >
+                <Alert
                   onClose={() => setShowAlert(false)}
+                  severity={error.includes('clipboard') || error.includes('deleted') ? "success" : "error"}
+                  sx={{ width: '100%' }}
                 >
-                  <Alert
-                    onClose={() => setShowAlert(false)}
-                    severity={error.includes('clipboard') || error.includes('deleted') ? "success" : "error"}
-                    sx={{ width: '100%' }}
-                  >
-                    {error}
-                  </Alert>
-                </Snackbar>
-              </Paper>
-            </Container>
-          </Box>
+                  {error}
+                </Alert>
+              </Snackbar>
+            </Paper>
+          </Container>
         </Box>
       </ThemeProvider>
     );
